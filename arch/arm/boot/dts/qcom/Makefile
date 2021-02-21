@@ -37,7 +37,7 @@ dtb-$(CONFIG_ARCH_QCOM) += \
 	qcom-msm8909-lenovo-lxf-p5100.dtb \
 	qcom-msm8909-nokia-leo.dtb \
 	qcom-msm8909-nokia-sparkler.dtb \
-	qcom-msm8909-zte-sapphire.dtb \
+	qcom-msm8916-huawei-hwt1a21l.dtb \
 	qcom-msm8916-samsung-e5.dtb \
 	qcom-msm8916-samsung-e7.dtb \
 	qcom-msm8916-samsung-fortunaltezt.dtb \
