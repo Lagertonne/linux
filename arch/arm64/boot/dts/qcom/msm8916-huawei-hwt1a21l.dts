@@ -1,0 +1,146 @@
+// SPDX-License-Identifier: GPL-2.0-only
+
+/dts-v1/;
+
+#include "msm8916-pm8916.dtsi"
+#include "msm8916-modem-qdsp6.dtsi"
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/interrupt-controller/irq.h>
+
+/ {
+	model = "Huawei Mediapad T1-A21L";
+	compatible = "huawei,hwt1a21l", "qcom,msm8916";
+
+	qcom,msm-id = <206 0>;
+	qcom,board-id = <8065 0> , <8065 4>;
+
+	aliases {
+		serial0 = &blsp_uart2;
+	};
+
+	chosen {
+		stdout-path = "serial0";
+	};
+
+	usb_id: usb-id {
+		compatible = "linux,extcon-usb-gpio";
+		id-gpios = <&tlmm 110 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&usb_id_default>;
+	};
+
+	gpio-keys {
+		compatible = "gpio-keys";
+
+		pinctrl-0 = <&gpio_keys_default>;
+		pinctrl-names = "default";
+
+		label = "GPIO Buttons";
+
+		button-volume-up {
+			label = "Volume Up";
+			gpios = <&tlmm 107 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_VOLUMEUP>;
+		};
+	};
+};
+&sdhc_1 {
+	status = "okay";
+};
+
+// Removable Storage
+//&sdhc_2 {
+//	status = "okay";
+//
+//	pinctrl-names = "default", "sleep";
+//	pinctrl-0 = <&sdc2_clk_on &sdc2_cmd_on &sdc2_data_on>;
+//	pinctrl-1 = <&sdc2_clk_off &sdc2_cmd_off &sdc2_data_off>;
+//
+//	cd-gpios = <&tlmm 38 GPIO_ACTIVE_LOW>;
+//};
+
+&blsp_uart2 {
+	status = "okay";
+};
+
+&pm8916_resin {
+	linux,code = <KEY_VOLUMEDOWN>;
+	status = "okay";
+};
+
+// make sure gcc is probed with display disabled.
+&gcc {
+	clocks = <&xo_board>, <&sleep_clk>, <0>, <0>, <0>, <0>, <0>;
+};
+
+&wcnss {
+	status = "okay";
+};
+
+&wcnss_iris {
+	compatible = "qcom,wcn3660b";
+};
+
+&wcnss_mem {
+	status = "okay";
+};
+
+
+&usb {
+	status = "okay";
+	extcon = <&usb_id>, <&usb_id>;
+};
+
+&usb_hs_phy {
+	extcon = <&usb_id>;
+};
+
+&tlmm {
+	usb_id_default: usb-id-default {
+		pins = "gpio110";
+		function = "gpio";
+
+		drive-strength = <8>;
+		bias-pull-up;
+	};
+	gpio_keys_default: gpio-keys-default {
+		pins = "gpio107";
+		function = "gpio";
+
+		drive-strength = <2>;
+		bias-pull-up;
+	};
+};
+
+// ---------- Obsolete stuff?  ------------
+
+//&sdhc_2 {
+//	status = "okay";
+//
+//	pinctrl-names = "default", "sleep";
+//	pinctrl-0 = <&sdc2_clk_on &sdc2_cmd_on &sdc2_data_on>;
+//	pinctrl-1 = <&sdc2_clk_off &sdc2_cmd_off &sdc2_data_off>;
+//
+//	cd-gpios = <&tlmm 38 GPIO_ACTIVE_LOW>;
+//};
+
+//
+//&tlmm {
+//	usb_id_default: usb-id-default {
+//		pins = "gpio110";
+//		function = "gpio";
+//
+//		drive-strength = <8>;
+//		bias-pull-up;
+//	};
+//
+//	gpio_keys_default: gpio-keys-default {
+//		pins = "gpio107";
+//		function = "gpio";
+//
+//		drive-strength = <2>;
+//		bias-pull-up;
+//	};
+//};
