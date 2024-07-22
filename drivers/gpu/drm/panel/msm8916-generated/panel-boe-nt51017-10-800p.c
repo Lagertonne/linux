@@ -41,6 +41,7 @@ static void boe_nt51017_10_800p_reset(struct boe_nt51017_10_800p *ctx)
 static int boe_nt51017_10_800p_on(struct boe_nt51017_10_800p *ctx)
 {
 	struct mipi_dsi_device *dsi = ctx->dsi;
+	pr_warn("Start _on for BOE NT51017_10_800p");
 
 	mipi_dsi_dcs_write_seq(dsi, 0x83, 0x96);
 	mipi_dsi_dcs_write_seq(dsi, 0x84, 0x69);

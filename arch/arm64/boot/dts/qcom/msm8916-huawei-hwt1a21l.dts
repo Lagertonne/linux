@@ -68,6 +68,10 @@
 	status = "okay";
 };
 
+&gpu {
+	status = "okay";
+};
+
 // Removable Storage
 //&sdhc_2 {
 //	status = "okay";
@@ -96,8 +100,16 @@
 };
 
 // make sure gcc is probed with display disabled.
-&gcc {
-	clocks = <&xo_board>, <&sleep_clk>, <0>, <0>, <0>, <0>, <0>;
+//&gcc {
+//	clocks = <&xo_board>, <&sleep_clk>, <0>, <0>, <0>, <0>, <0>;
+//};
+
+&venus {
+	status = "okay";
+};
+
+&venus_mem {
+	status = "okay";
 };
 
 &wcnss {
@@ -126,16 +138,19 @@
 	status = "okay";
 };
 
-
 &mdss_dsi0 {
+	pinctrl-0 = <&mdss_default>;
+	pinctrl-1 = <&mdss_sleep>;
+	pinctrl-names = "default", "sleep";
+
 	panel@0 {
 		compatible = "boe,nt51017-10-800p";
 		reg = <0>;
+		//lcd-supply = <&reg_lcd>;
+		//vdd3-supply = <&pm8916_l17>;
+		//vci-supply = <&pm8916_l6>;
 
-		lcd-supply = <&reg_lcd>;
-
-		vdd3-supply = <&pm8916_l17>;
-		vci-supply = <&pm8916_l6>;
+		power-supply = <&pm8916_l17>;
 		reset-gpios = <&tlmm 25 GPIO_ACTIVE_LOW>;
 
 		port {
@@ -153,6 +168,18 @@
 
 &mdss_dsi0_phy {
 	qcom,dsi-phy-regulator-ldo-mode;
+};
+
+&pm8916_rpm_regulators {
+	pm8916_l16: l16 {
+		regulator-min-microvolt = <2850000>;
+		regulator-max-microvolt = <2850000>;
+	};
+
+	pm8916_l17: l17 {
+		regulator-min-microvolt = <2850000>;
+		regulator-max-microvolt = <2850000>;
+	};
 };
 
 &tlmm {
@@ -178,9 +205,17 @@
 		bias-disable;
 	};
 
-	reg_lcd_en_default: reg-lcd-en-default-state {
-		pins = "gpio8";
+	mdss_sleep: mdss-sleep-state {
+		pins = "gpio25";
 		function = "gpio";
+		drive-strength = <2>;
+		bias-pull-down;
+	};
+
+	reg_lcd_en_default: reg-lcd-en-default-state {
+		pins = "gpio32", "gpio97";
+		function = "gpio";
+
 		drive-strength = <2>;
 		bias-disable;
 	};
