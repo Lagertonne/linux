@@ -45,6 +45,24 @@
 			linux,code = <KEY_VOLUMEUP>;
 		};
 	};
+
+	reg_lcd: regulator-lcd {
+		compatible = "regulator-fixed";
+		regulator-name = "lcd";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+
+		gpio = <&tlmm 8 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+
+		pinctrl-0 = <&reg_lcd_en_default>;
+		pinctrl-names = "default";
+
+		// FIXME: This breaks turning panel back on
+		regulator-always-on;
+		regulator-boot-on;
+		startup-delay-us = <150>;
+	};
 };
 &sdhc_1 {
 	status = "okay";
@@ -68,6 +86,13 @@
 &pm8916_resin {
 	linux,code = <KEY_VOLUMEDOWN>;
 	status = "okay";
+};
+
+&pm8916_rpm_regulators {
+	pm8916_l17: l17 {
+		regulator-min-microvolt = <2850000>;
+		regulator-max-microvolt = <2850000>;
+	};
 };
 
 // make sure gcc is probed with display disabled.
@@ -97,6 +122,39 @@
 	extcon = <&usb_id>;
 };
 
+&mdss {
+	status = "okay";
+};
+
+
+&mdss_dsi0 {
+	panel@0 {
+		compatible = "boe,nt51017-10-800p";
+		reg = <0>;
+
+		lcd-supply = <&reg_lcd>;
+
+		vdd3-supply = <&pm8916_l17>;
+		vci-supply = <&pm8916_l6>;
+		reset-gpios = <&tlmm 25 GPIO_ACTIVE_LOW>;
+
+		port {
+			panel_in: endpoint {
+				remote-endpoint = <&mdss_dsi0_out>;
+			};
+		};
+	};
+};
+
+&mdss_dsi0_out {
+	data-lanes = <0 1 2 3>;
+	remote-endpoint = <&panel_in>;
+};
+
+&mdss_dsi0_phy {
+	qcom,dsi-phy-regulator-ldo-mode;
+};
+
 &tlmm {
 	usb_id_default: usb-id-default {
 		pins = "gpio110";
@@ -112,35 +170,18 @@
 		drive-strength = <2>;
 		bias-pull-up;
 	};
+
+	mdss_default: mdss-default-state {
+		pins = "gpio25";
+		function = "gpio";
+		drive-strength = <8>;
+		bias-disable;
+	};
+
+	reg_lcd_en_default: reg-lcd-en-default-state {
+		pins = "gpio8";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
+	};
 };
-
-// ---------- Obsolete stuff?  ------------
-
-//&sdhc_2 {
-//	status = "okay";
-//
-//	pinctrl-names = "default", "sleep";
-//	pinctrl-0 = <&sdc2_clk_on &sdc2_cmd_on &sdc2_data_on>;
-//	pinctrl-1 = <&sdc2_clk_off &sdc2_cmd_off &sdc2_data_off>;
-//
-//	cd-gpios = <&tlmm 38 GPIO_ACTIVE_LOW>;
-//};
-
-//
-//&tlmm {
-//	usb_id_default: usb-id-default {
-//		pins = "gpio110";
-//		function = "gpio";
-//
-//		drive-strength = <8>;
-//		bias-pull-up;
-//	};
-//
-//	gpio_keys_default: gpio-keys-default {
-//		pins = "gpio107";
-//		function = "gpio";
-//
-//		drive-strength = <2>;
-//		bias-pull-up;
-//	};
-//};
