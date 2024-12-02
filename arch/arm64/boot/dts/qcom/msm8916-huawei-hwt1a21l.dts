@@ -46,6 +46,31 @@
 		};
 	};
 };
+
+&mdss_dsi0 {
+	panel@0 {
+		compatible = "boe,nt51017-10-800p";
+		reg = <0>;
+
+		reset-gpios = <&tlmm 25 GPIO_ACTIVE_LOW>;
+
+		port {
+			panel_in: endpoint {
+				remote-endpoint = <&mdss_dsi0_out>;
+			};
+		};
+	};
+};
+
+&mdss_dsi0_out {
+	data-lanes = <0 1 2 3>;
+	remote-endpoint = <&panel_in>;
+};
+
+&mdss_dsi0_phy {
+	qcom,dsi-phy-regulator-ldo-mode;
+};
+
 &sdhc_1 {
 	status = "okay";
 };
@@ -111,6 +136,14 @@
 
 		drive-strength = <2>;
 		bias-pull-up;
+	};
+
+	mdss_default: mdss-default-state {
+		pins = "gpio25";
+		function = "gpio";
+
+		drive-strength = <8>;
+		bias-disable;
 	};
 };
 
